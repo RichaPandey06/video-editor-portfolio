@@ -2,7 +2,7 @@ const express = require("express");
 const {
   getProjects,
   getProjectById,
-   getProjectsByCategory,
+  getProjectsByCategory,
   createProject,
   updateProject,
   deleteProject,
