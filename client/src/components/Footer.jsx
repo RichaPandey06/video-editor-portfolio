@@ -37,7 +37,7 @@ const Footer = () => {
     setLoading(true);
     try {
       await axios.post(
-        `${API_URL}/api/subscribers`,
+        `${API_URL}/subscribers`,
         { email }
       );
       toast.success("Subscribed successfully!");

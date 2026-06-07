@@ -16,7 +16,7 @@ const AdminRegister = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post(`${API_URL}/api/auth/register`, { email, password });
+      await axios.post(`${API_URL}/auth/register`, { email, password });
       toast.success("Account created! Please sign in.");
       navigate("/admin/login");
     } catch (error) {

@@ -18,7 +18,7 @@ const AdminMessages = () => {
       try {
         const token = localStorage.getItem("token");
 const response = await axios.get(
-  `${API_URL}/api/contact`, { headers: { Authorization: `Bearer ${token}` } });
+  `${API_URL}/contact`, { headers: { Authorization: `Bearer ${token}` } });
         setMessages(response.data);
       } catch (error) { console.error(error); }
       finally { setLoading(false); }

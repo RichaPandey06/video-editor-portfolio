@@ -115,7 +115,7 @@ const Contact = () => {
     setLoading(true);
     try {
       await axios.post(
-  `${API_URL}/api/contact`,{ name, email, message });
+  `${API_URL}/contact`,{ name, email, message });
       toast.success("Message sent successfully!");
       setName(""); setEmail(""); setMessage("");
     } catch (error) {

@@ -14,7 +14,7 @@ const AdminSubscribers = () => {
         localStorage.getItem("token");
 
      const response = await axios.get(
-  `${API_URL}/api/subscribers`,
+  `${API_URL}/subscribers`,
         {
           headers: {
             Authorization:

@@ -55,7 +55,7 @@ const Admin = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${API_URL}/api/dashboard/stats`, {
+        const { data } = await axios.get(`${API_URL}/dashboard/stats`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setStats(data);
@@ -71,7 +71,7 @@ const Admin = () => {
   const uploadFile = async (file, type) => {
     const fd = new FormData();
     fd.append(type, file); // "image" or "video" must match multer field name
-    const { data } = await axios.post(`${API_URL}/api/upload/${type}`, fd);
+    const { data } = await axios.post(`${API_URL}/upload/${type}`, fd);
     return data; // { url, public_id }
   };
 
