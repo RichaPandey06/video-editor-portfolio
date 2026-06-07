@@ -97,7 +97,7 @@ const Admin = () => {
 
       // Send ALL fields including public_ids — this is what fixes Cloudinary delete
       await axios.post(
-        `${API_URL}/api/project`,
+        `${API_URL}/project`,
         {
           title,
           category,

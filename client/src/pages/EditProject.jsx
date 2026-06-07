@@ -23,7 +23,7 @@ const EditProject = () => {
     console.log("ID:", id);
 
     const response = await axios.get(
-  `${API_URL}/api/project/${id}`,
+  `${API_URL}/project/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const EditProject = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-  `${API_URL}/api/project/${id}`,
+  `${API_URL}/project/${id}`,
         { title, category, description },
         {
           headers: {

@@ -79,7 +79,7 @@ const MotionGraphics = () => {
     const fetchProjects = async () => {
       try {
 const response = await axios.get(
-  `${API_URL}/api/project/category/Motion Graphics`
+  `${API_URL}/project/category/Motion Graphics`
 );        setProjects(response.data);
       } catch (error) {
         console.error(error);

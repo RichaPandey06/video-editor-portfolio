@@ -79,7 +79,7 @@ const InstagramReels = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-  `${API_URL}/api/project/category/Instagram`
+  `${API_URL}/project/category/Instagram`
 );
         setProjects(response.data);
       } catch (error) {

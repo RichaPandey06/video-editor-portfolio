@@ -18,7 +18,7 @@ const AdminProjects = () => {
     const fetchProjects = async () => {
       try {
        const response = await axios.get(
-  `${API_URL}/api/project`
+  `${API_URL}/project`
 );
         setProjects(response.data);
       } catch (error) { console.error(error); toast.error("Failed to load projects"); }
@@ -32,7 +32,7 @@ const AdminProjects = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
-  `${API_URL}/api/project/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+  `${API_URL}/project/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       toast.success("Project deleted");
       setProjects((prev) => prev.filter((p) => p._id !== id));
     } catch (error) { console.error(error); toast.error("Delete failed"); }

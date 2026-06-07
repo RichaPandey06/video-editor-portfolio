@@ -16,12 +16,12 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ Mount the routes
-app.use("/api/project", projectRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/subscribers",subscriberRoutes);
-app.use( "/api/auth", authRoutes );
-app.use( "/api/dashboard", dashboardRoutes);
+app.use("/project", projectRoutes);
+app.use("/upload", uploadRoutes);
+app.use("/contact", contactRoutes);
+app.use("/subscribers",subscriberRoutes);
+app.use( "/auth", authRoutes );
+app.use( "/dashboard", dashboardRoutes);
 
 // Export the app so server.js can use it
 module.exports = app;

@@ -142,7 +142,7 @@ const YoutubeProjects = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-  `${API_URL}/api/project/category/YouTube`
+  `${API_URL}/project/category/YouTube`
 );
         setProjects(response.data);
       } catch (error) {
