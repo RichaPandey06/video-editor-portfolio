@@ -27,7 +27,7 @@ const ProjectCard = ({ project, index }) => (
   <motion.div variants={CARD_ITEM} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 280, damping: 22 }} className="group h-full">
     <div className="relative flex flex-col h-full bg-zinc-900/60 border border-white/[0.08] hover:border-white/20 rounded-2xl overflow-hidden backdrop-blur-sm transition-colors duration-300">
       <div className="relative overflow-hidden bg-zinc-950 h-48 flex-shrink-0">
-// ✅ After
+
         <img
           src={project.thumbnail?.replace("/upload/", "/upload/q_auto,f_auto,w_600/")}
           alt={project.title}

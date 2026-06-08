@@ -43,7 +43,7 @@ const ProjectCard = ({ project, index }) => (
 
       {/* Thumbnail */}
       <div className="relative overflow-hidden bg-zinc-950 h-48 flex-shrink-0">
-        // ✅ After
+       
         <img
           src={project.thumbnail?.replace("/upload/", "/upload/q_auto,f_auto,w_600/")}
           alt={project.title}
