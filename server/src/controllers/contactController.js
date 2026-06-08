@@ -61,4 +61,33 @@ const markAsRead = async (req, res) => {
   }
 };
 
-module.exports = { createContact, getContacts, deleteContact, markAsRead };
+const replyContact = async (req, res) => {
+  try {
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) return res.status(404).json({ message: "Message not found" });
+
+    const { replyText } = req.body;
+
+    resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: contact.email,
+      subject: `Re: Your message to Richa Edits`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
+          <h2>Reply from Richa Edits</h2>
+          <p>Hi ${contact.name},</p>
+          <p>${replyText}</p>
+          <hr style="border-color: #eee; margin: 20px 0;" />
+          <p style="color: #999; font-size: 12px;">Your original message: "${contact.message}"</p>
+        </div>
+      `,
+    }).catch(err => console.error("Reply email failed:", err));
+
+    await Contact.findByIdAndUpdate(req.params.id, { read: true });
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { createContact, getContacts, deleteContact, markAsRead, replyContact };
