@@ -15,7 +15,7 @@ app.set("trust proxy", 1);
 // Rate limiters
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 500, 
+  max: 1000, // ← increase from 500
   message: { message: "Too many requests, please try again later." },
 });
 
@@ -34,6 +34,7 @@ const contactLimiter = rateLimit({
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
 app.use(globalLimiter);
 
 // Routes
@@ -43,6 +44,5 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/subscribers", subscriberRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
 
 module.exports = app;
