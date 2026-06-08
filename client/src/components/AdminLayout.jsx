@@ -27,11 +27,15 @@ const AdminLayout = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const headers = { Authorization: `Bearer ${token}` };
+  const fetchDashboardData = useCallback(async () => {
+}, [headers, navigate]);
 
   // ✅ FIX #1: Memoize fetch function to prevent recreation
   const fetchDashboardData = useCallback(async () => {
+     const token = localStorage.getItem("token");
+     const headers = {
+    Authorization: `Bearer ${token}`,
+  };
     try {
       setIsLoading(true);
       setError(null);
@@ -40,7 +44,7 @@ const AdminLayout = () => {
       const [contactRes, subscribersRes, projectsRes] = await Promise.all([
         axios.get(`${API_URL}/contact`, { headers }),
         axios.get(`${API_URL}/subscribers`, { headers }),
-        axios.get(`${API_URL}/projects`, { headers }),
+        axios.get(`${API_URL}/project`, { headers }),
       ]);
 
       // ✅ FIX #2: Validate responses before using
@@ -77,7 +81,7 @@ const AdminLayout = () => {
       );
       setIsLoading(false);
     }
-  }, [headers, navigate]);
+  }, [navigate]);
 
   // ✅ FIX #4: Remove location.pathname from dependencies - only fetch on mount
   useEffect(() => {
