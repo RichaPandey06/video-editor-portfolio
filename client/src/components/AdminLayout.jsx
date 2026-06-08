@@ -9,6 +9,7 @@ const AdminLayout = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [subscriberCount, setSubscriberCount] = useState(0);
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -22,17 +23,33 @@ const AdminLayout = () => {
         console.error(error);
       }
     };
+
+    const fetchSubscribers = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/subscribers`, { headers });
+        setSubscriberCount(response.data.length); // assuming API returns array of subscribers
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     fetchUnread();
+    fetchSubscribers();
+
     // refresh every 60 seconds
-    const interval = setInterval(fetchUnread, 60 * 1000);
+    const interval = setInterval(() => {
+      fetchUnread();
+      fetchSubscribers();
+    }, 60 * 1000);
+
     return () => clearInterval(interval);
-  }, [location.pathname]); // re-fetch when navigating
+  }, [location.pathname]);
 
   const NAV_ITEMS = [
     { path: "/admin",             label: "Dashboard",   icon: LayoutDashboard },
     { path: "/admin/projects",    label: "Projects",    icon: FolderOpen },
     { path: "/admin/messages",    label: "Messages",    icon: Mail,  badge: unreadCount },
-    { path: "/admin/subscribers", label: "Subscribers", icon: Users },
+    { path: "/admin/subscribers", label: "Subscribers", icon: Users, badge: subscriberCount },
   ];
 
   const handleLogout = () => {
@@ -44,13 +61,8 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
-      {/* Grid texture */}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 opacity-[0.025]"
-        style={{ backgroundImage: "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)", backgroundSize: "64px 64px" }} />
-
-      {/* ── Header ── */}
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-xl border-b border-white/[0.08]">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="flex items-center justify-between px-4 sm:px-6 lg:px-10 h-16">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="md:hidden p-2 text-zinc-400 hover:text-white transition-colors rounded" aria-label="Toggle menu">
@@ -68,7 +80,7 @@ const AdminLayout = () => {
       </header>
 
       <div className="relative flex flex-1">
-        {/* ── Sidebar ── */}
+        {/* Sidebar */}
         <aside className={`fixed inset-y-0 left-0 md:sticky md:top-16 md:h-[calc(100vh-4rem)] w-60 bg-zinc-950/95 md:bg-transparent border-r border-white/[0.08] flex flex-col pt-16 md:pt-0 z-30 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
           <div className="flex flex-col flex-1 px-3 py-6 gap-1">
             {NAV_ITEMS.map(({ path, label, icon: Icon, badge }) => (
@@ -89,18 +101,9 @@ const AdminLayout = () => {
               </Link>
             ))}
           </div>
-          <div className="px-3 pb-6 md:hidden">
-            <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900/60 border border-white/[0.08] text-zinc-400 hover:text-white text-sm font-medium transition-all duration-200">
-              <LogOut className="w-3.5 h-3.5" />
-              Logout
-            </button>
-          </div>
         </aside>
 
-        {/* Mobile overlay */}
-        {sidebarOpen && <div className="fixed inset-0 bg-black/60 md:hidden z-20 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />}
-
-        {/* ── Main Content ── */}
+        {/* Main Content */}
         <main className="relative flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-10">
           <div className="max-w-7xl mx-auto">
             <Outlet />
