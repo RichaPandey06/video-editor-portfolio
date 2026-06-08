@@ -4,6 +4,9 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { Loader, FolderOpen, Users, Mail, UploadCloud } from "lucide-react";
 import API_URL from "../config/api";
+import { isTokenExpired, logout } from "../utils/auth";
+
+
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -49,6 +52,17 @@ const Admin = () => {
   const [thumbnail, setThumbnail] = useState(null);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ projects: 0, subscribers: 0, messages: 0 });
+
+  // ─── Session timeout check ───
+useEffect(() => {
+  if (isTokenExpired()) {
+    logout();
+  }
+  const interval = setInterval(() => {
+    if (isTokenExpired()) logout();
+  }, 60 * 1000);
+  return () => clearInterval(interval);
+}, []);
 
   // ─── Fetch dashboard stats ───
   useEffect(() => {
