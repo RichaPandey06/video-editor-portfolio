@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("express-mongo-sanitize");
 
 const projectRoutes = require("./routes/projectRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
@@ -14,28 +13,27 @@ const app = express();
 
 // Rate limiters
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 100,
   message: { message: "Too many requests, please try again later." },
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10, // only 10 login attempts per 15 min
+  max: 10,
   message: { message: "Too many login attempts, please try again later." },
 });
 
 const contactLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // only 5 contact form submissions per hour
+  windowMs: 60 * 60 * 1000,
+  max: 5,
   message: { message: "Too many messages sent, please try again later." },
 });
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(mongoSanitize({ allowDots: true, replaceWith: '_' })); // ← strips $ and . from inputs, prevents NoSQL injection
-app.use(globalLimiter);  // ← applies to all routes
+app.use(globalLimiter);
 
 // Routes
 app.use("/api/project", projectRoutes);
