@@ -98,7 +98,7 @@ const AdminLayout = () => {
   const NAV_ITEMS = [
     { path: "/admin", label: "Dashboard", icon: FiGrid },
     {
-      path: "/admin/projects",
+      path: "/admin/project",
       label: "Projects",
       icon: FiFolderOpen,
       badge: projectCount,
