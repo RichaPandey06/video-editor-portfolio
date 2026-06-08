@@ -29,10 +29,10 @@ const AdminSubscribers = () => {
   }, []);
 
   const exportCSV = () => {
-    const header = ["Email", "Date"];
+    const header = ["Email", "Date & Time"];
     const rows = subscribers.map((s) => [
       s.email,
-      new Date(s.createdAt).toLocaleDateString(),
+      new Date(s.createdAt).toLocaleString(),
     ]);
     const csv = [header, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
@@ -81,7 +81,6 @@ const AdminSubscribers = () => {
           ))}
         </div>
 
-      /* Empty */
       ) : subscribers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 bg-zinc-900/60 border border-white/[0.08] rounded-2xl">
           <div className="w-12 h-12 rounded-2xl bg-zinc-800/80 border border-white/[0.06] flex items-center justify-center mb-4">
@@ -90,7 +89,6 @@ const AdminSubscribers = () => {
           <p className="text-zinc-500 text-sm font-mono tracking-[0.15em] uppercase select-none">No subscribers yet</p>
         </div>
 
-      /* List */
       ) : (
         <motion.div variants={STAGGER} initial="hidden" animate="visible"
           className="bg-zinc-900/60 border border-white/[0.08] rounded-2xl overflow-hidden">
@@ -106,7 +104,7 @@ const AdminSubscribers = () => {
                 i !== subscribers.length - 1 ? "border-b border-white/[0.04]" : ""
               }`}>
               <p className="text-sm text-zinc-300 truncate">{s.email}</p>
-              <p className="text-sm font-mono text-zinc-500">{new Date(s.createdAt).toLocaleDateString()}</p>
+              <p className="text-sm font-mono text-zinc-500">{new Date(s.createdAt).toLocaleString()}</p>
             </motion.div>
           ))}
         </motion.div>
