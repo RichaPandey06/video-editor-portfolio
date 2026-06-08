@@ -41,11 +41,10 @@ const AdminLayout = () => {
       setIsLoading(true);
       setError(null);
 
-      // FIX: Use /projects (plural) to match backend route
       const [contactRes, subscribersRes, projectsRes] = await Promise.all([
         axios.get(`${API_URL}/contact`, { headers }),
         axios.get(`${API_URL}/subscribers`, { headers }),
-        axios.get(`${API_URL}/projects`, { headers }), // was /project (singular) — caused 404
+        axios.get(`${API_URL}/project`, { headers }),
       ]);
 
       const unread = Array.isArray(contactRes.data)
