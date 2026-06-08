@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
+app.set("trust proxy", 1);
 
 // Rate limiters
 const globalLimiter = rateLimit({
