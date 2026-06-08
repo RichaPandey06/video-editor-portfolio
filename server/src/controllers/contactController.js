@@ -1,6 +1,5 @@
 const Contact = require("../models/Contact");
 const { Resend } = require("resend");
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const getContacts = async (req, res) => {
@@ -15,13 +14,9 @@ const getContacts = async (req, res) => {
 const createContact = async (req, res) => {
   try {
     const { name, email, message } = req.body;
-
     const contact = await Contact.create({ name, email, message });
-
-    // ✅ Respond immediately
     res.status(201).json({ success: true, contact });
 
-    // Send email in background
     resend.emails.send({
       from: "onboarding@resend.dev",
       to: process.env.EMAIL_USER,
@@ -44,4 +39,26 @@ const createContact = async (req, res) => {
   }
 };
 
-module.exports = { createContact, getContacts };
+const deleteContact = async (req, res) => {
+  try {
+    await Contact.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const markAsRead = async (req, res) => {
+  try {
+    const contact = await Contact.findByIdAndUpdate(
+      req.params.id,
+      { read: true },
+      { new: true }
+    );
+    res.status(200).json(contact);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { createContact, getContacts, deleteContact, markAsRead };
