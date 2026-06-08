@@ -29,11 +29,15 @@ const AdminSubscribers = () => {
   }, []);
 
   const exportCSV = () => {
-    const header = ["Email", "Date & Time"];
-    const rows = subscribers.map((s) => [
-      s.email,
-      new Date(s.createdAt).toLocaleString(),
-    ]);
+    const header = ["Email", "Date", "Time"];
+    const rows = subscribers.map((s) => {
+      const date = new Date(s.createdAt);
+      return [
+        s.email,
+        date.toLocaleDateString(),
+        date.toLocaleTimeString(),
+      ];
+    });
     const csv = [header, ...rows].map((r) => r.join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -100,9 +104,8 @@ const AdminSubscribers = () => {
           {/* Rows */}
           {subscribers.map((s, i) => (
             <motion.div key={s._id} variants={ROW_ITEM}
-              className={`grid grid-cols-2 px-5 py-4 transition-colors hover:bg-white/[0.02] ${
-                i !== subscribers.length - 1 ? "border-b border-white/[0.04]" : ""
-              }`}>
+              className={`grid grid-cols-2 px-5 py-4 transition-colors hover:bg-white/[0.02] ${i !== subscribers.length - 1 ? "border-b border-white/[0.04]" : ""
+                }`}>
               <p className="text-sm text-zinc-300 truncate">{s.email}</p>
               <p className="text-sm font-mono text-zinc-500">{new Date(s.createdAt).toLocaleString()}</p>
             </motion.div>
