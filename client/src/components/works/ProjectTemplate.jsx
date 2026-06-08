@@ -93,6 +93,7 @@ const ProjectTemplate = ({ title, category, duration, tools, overview, services,
         </motion.div>
 
         {/* ── Video ── */}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25, ease: EASE }}
@@ -100,7 +101,12 @@ const ProjectTemplate = ({ title, category, duration, tools, overview, services,
         >
           <div aria-hidden="true" className="absolute -inset-px rounded-2xl bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
           <div className="relative rounded-2xl overflow-hidden border border-white/[0.08]">
-            <video src={video} controls className="w-full block" />
+            <video
+              src={video?.replace("/upload/", "/upload/q_auto,f_auto/")}
+              controls
+              preload="metadata"
+              className="w-full block"
+            />
           </div>
         </motion.div>
 

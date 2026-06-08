@@ -27,8 +27,14 @@ const ProjectCard = ({ project, index }) => (
   <motion.div variants={CARD_ITEM} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 280, damping: 22 }} className="group h-full">
     <div className="relative flex flex-col h-full bg-zinc-900/60 border border-white/[0.08] hover:border-white/20 rounded-2xl overflow-hidden backdrop-blur-sm transition-colors duration-300">
       <div className="relative overflow-hidden bg-zinc-950 h-48 flex-shrink-0">
-        <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-zinc-950/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+// ✅ After
+        <img
+          src={project.thumbnail?.replace("/upload/", "/upload/q_auto,f_auto,w_600/")}
+          alt={project.title}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+        />        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-zinc-950/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
         <span className="absolute top-3 left-3 text-[10px] font-mono font-medium text-white/40 tracking-[0.2em] select-none">{String(index + 1).padStart(2, "0")}</span>
         <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-[10px] font-medium text-white/70 tracking-wide border border-white/10">{project.category}</span>
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -79,8 +85,8 @@ const InstagramReels = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-  `${API_URL}/project/category/Instagram`
-);
+          `${API_URL}/project/category/Instagram`
+        );
         setProjects(response.data);
       } catch (error) {
         console.error(error);

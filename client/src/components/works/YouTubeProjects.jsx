@@ -43,9 +43,12 @@ const ProjectCard = ({ project, index }) => (
 
       {/* Thumbnail */}
       <div className="relative overflow-hidden bg-zinc-950 h-48 flex-shrink-0">
+        // ✅ After
         <img
-          src={project.thumbnail}
+          src={project.thumbnail?.replace("/upload/", "/upload/q_auto,f_auto,w_600/")}
           alt={project.title}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
         />
         {/* Scrim */}
@@ -142,8 +145,8 @@ const YoutubeProjects = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-  `${API_URL}/project/category/YouTube`
-);
+          `${API_URL}/project/category/YouTube`
+        );
         setProjects(response.data);
       } catch (error) {
         console.error(error);

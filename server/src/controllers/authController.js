@@ -11,7 +11,7 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "Admin already exists" });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 8);
     await Admin.create({ email, password: hashed });
 
     res.status(201).json({ message: "Admin registered successfully" });
