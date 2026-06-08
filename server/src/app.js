@@ -34,7 +34,7 @@ const contactLimiter = rateLimit({
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(mongoSanitize()); // ← strips $ and . from inputs, prevents NoSQL injection
+app.use(mongoSanitize({ allowDots: true, replaceWith: '_' })); // ← strips $ and . from inputs, prevents NoSQL injection
 app.use(globalLimiter);  // ← applies to all routes
 
 // Routes
