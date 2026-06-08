@@ -27,61 +27,58 @@ const AdminLayout = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchDashboardData = useCallback(async () => {
-}, [headers, navigate]);
 
   // ✅ FIX #1: Memoize fetch function to prevent recreation
   const fetchDashboardData = useCallback(async () => {
-     const token = localStorage.getItem("token");
-     const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-    try {
-      setIsLoading(true);
-      setError(null);
+  try {
+    const token = localStorage.getItem("token");
 
-      // Parallel requests for better performance
-      const [contactRes, subscribersRes, projectsRes] = await Promise.all([
-        axios.get(`${API_URL}/contact`, { headers }),
-        axios.get(`${API_URL}/subscribers`, { headers }),
-        axios.get(`${API_URL}/project`, { headers }),
-      ]);
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
 
-      // ✅ FIX #2: Validate responses before using
-      const unread = Array.isArray(contactRes.data)
-        ? contactRes.data.filter((m) => m.read === false).length
-        : 0;
+    setIsLoading(true);
+    setError(null);
 
-      const subscribers = Array.isArray(subscribersRes.data)
-        ? subscribersRes.data.length
-        : 0;
+    const [contactRes, subscribersRes, projectsRes] = await Promise.all([
+      axios.get(`${API_URL}/contact`, { headers }),
+      axios.get(`${API_URL}/subscribers`, { headers }),
+      axios.get(`${API_URL}/project`, { headers }), // use /project if backend route is singular
+    ]);
 
-      const projects = Array.isArray(projectsRes.data)
-        ? projectsRes.data.length
-        : 0;
+    const unread = Array.isArray(contactRes.data)
+      ? contactRes.data.filter((m) => !m.read).length
+      : 0;
 
-      setUnreadCount(unread);
-      setSubscriberCount(subscribers);
-      setProjectCount(projects);
-      setIsLoading(false);
-    } catch (err) {
-      // ✅ FIX #3: Better error handling
-      console.error("Dashboard data fetch error:", err);
+    const subscribers = Array.isArray(subscribersRes.data)
+      ? subscribersRes.data.length
+      : 0;
 
-      // Handle auth errors
-      if (err.response?.status === 401) {
-        localStorage.removeItem("token");
-        navigate("/admin/login");
-        return;
-      }
+    const projects = Array.isArray(projectsRes.data)
+      ? projectsRes.data.length
+      : 0;
 
-      setError(
-        err.message ||
-          "Failed to load dashboard data. Please try again."
-      );
-      setIsLoading(false);
+    setUnreadCount(unread);
+    setSubscriberCount(subscribers);
+    setProjectCount(projects);
+  } catch (err) {
+    console.error("Dashboard data fetch error:", err);
+
+    if (err.response?.status === 401) {
+      localStorage.removeItem("token");
+      navigate("/admin/login");
+      return;
     }
-  }, [navigate]);
+
+    setError(
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to load dashboard data."
+    );
+  } finally {
+    setIsLoading(false);
+  }
+}, [navigate]);
 
   // ✅ FIX #4: Remove location.pathname from dependencies - only fetch on mount
   useEffect(() => {
