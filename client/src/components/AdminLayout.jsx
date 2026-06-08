@@ -1,18 +1,39 @@
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LayoutDashboard, FolderOpen, Mail, Users, LogOut, Menu, X } from "lucide-react";
-
-const NAV_ITEMS = [
-  { path: "/admin",             label: "Dashboard", icon: LayoutDashboard },
-  { path: "/admin/projects",    label: "Projects",  icon: FolderOpen },
-  { path: "/admin/messages",    label: "Messages",  icon: Mail },
-  { path: "/admin/subscribers", label: "Subscribers", icon: Users },
-];
+import axios from "axios";
+import API_URL from "../config/api";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const token = localStorage.getItem("token");
+  const headers = { Authorization: `Bearer ${token}` };
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/contact`, { headers });
+        const count = response.data.filter((m) => !m.read).length;
+        setUnreadCount(count);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUnread();
+    // refresh every 60 seconds
+    const interval = setInterval(fetchUnread, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [location.pathname]); // re-fetch when navigating
+
+  const NAV_ITEMS = [
+    { path: "/admin",             label: "Dashboard",   icon: LayoutDashboard },
+    { path: "/admin/projects",    label: "Projects",    icon: FolderOpen },
+    { path: "/admin/messages",    label: "Messages",    icon: Mail,  badge: unreadCount },
+    { path: "/admin/subscribers", label: "Subscribers", icon: Users },
+  ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -50,7 +71,7 @@ const AdminLayout = () => {
         {/* ── Sidebar ── */}
         <aside className={`fixed inset-y-0 left-0 md:sticky md:top-16 md:h-[calc(100vh-4rem)] w-60 bg-zinc-950/95 md:bg-transparent border-r border-white/[0.08] flex flex-col pt-16 md:pt-0 z-30 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
           <div className="flex flex-col flex-1 px-3 py-6 gap-1">
-            {NAV_ITEMS.map(({ path, label, icon: Icon }) => (
+            {NAV_ITEMS.map(({ path, label, icon: Icon, badge }) => (
               <Link key={path} to={path} onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive(path)
@@ -59,7 +80,12 @@ const AdminLayout = () => {
                 }`}>
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 {label}
-                {isActive(path) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white" />}
+                {badge > 0 && (
+                  <span className="ml-auto min-w-[18px] h-[18px] px-1 rounded-full bg-violet-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
+                {isActive(path) && !badge && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white" />}
               </Link>
             ))}
           </div>
