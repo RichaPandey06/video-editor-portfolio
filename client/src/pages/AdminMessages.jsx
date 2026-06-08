@@ -123,7 +123,7 @@ const AdminMessages = () => {
                     {!msg.read && <span className="text-[10px] font-mono text-violet-400 uppercase tracking-wider">New</span>}
                   </div>
 
-                  <div className="flex items-center gap-3 ml-10 sm:ml-0">
+                  <div className="flex items-center flex-wrap gap-2 ml-10 sm:ml-0">
                     <p className="text-[11px] font-mono text-zinc-500 tracking-wide truncate max-w-[140px] sm:max-w-none">{msg.email}</p>
                     <p className="text-[11px] font-mono text-zinc-600 hidden sm:block">{new Date(msg.createdAt).toLocaleDateString()}</p>
 
