@@ -84,20 +84,15 @@ const AdminSubscribers = () => {
         </div>
         <div className="flex items-center gap-3">
           {selected.length > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              disabled={deleting}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 hover:border-red-500/40 hover:bg-red-500/20 transition-colors text-sm text-red-400 disabled:opacity-50"
-            >
+            <button onClick={handleBulkDelete} disabled={deleting}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/20 hover:border-red-500/40 hover:bg-red-500/20 transition-colors text-sm text-red-400 disabled:opacity-50">
               <Trash2 className="w-4 h-4" />
               {deleting ? "Deleting..." : `Delete (${selected.length})`}
             </button>
           )}
           {subscribers.length > 0 && (
-            <button
-              onClick={exportCSV}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/60 border border-white/[0.08] hover:border-violet-500/40 hover:bg-violet-500/10 transition-colors text-sm text-zinc-400 hover:text-violet-400"
-            >
+            <button onClick={exportCSV}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/60 border border-white/[0.08] hover:border-violet-500/40 hover:bg-violet-500/10 transition-colors text-sm text-zinc-400 hover:text-violet-400">
               <Download className="w-4 h-4" />
               Export CSV
             </button>
@@ -105,13 +100,20 @@ const AdminSubscribers = () => {
         </div>
       </div>
 
-      {/* Count */}
-      {!loading && subscribers.length > 0 && (
-        <p className="text-[11px] font-mono text-zinc-500 tracking-wider">
-          {subscribers.length} subscriber{subscribers.length !== 1 ? "s" : ""}
-          {selected.length > 0 && <span className="text-violet-400 ml-2">· {selected.length} selected</span>}
+      {/* Stat Card */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}
+        className="flex flex-col bg-zinc-900/60 border border-white/[0.08] rounded-2xl p-5 backdrop-blur-sm w-full sm:w-48">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-[10px] font-mono tracking-[0.2em] text-zinc-500 uppercase select-none">Total</p>
+          <div className="w-8 h-8 rounded-lg bg-zinc-800/80 border border-white/[0.06] flex items-center justify-center">
+            <Users className="w-3.5 h-3.5 text-zinc-400" />
+          </div>
+        </div>
+        <p className="text-3xl font-bold text-white tabular-nums tracking-tight">
+          {loading ? "—" : subscribers.length}
         </p>
-      )}
+        <p className="text-[11px] font-mono text-zinc-600 mt-1">subscribers</p>
+      </motion.div>
 
       {/* Loading */}
       {loading ? (
@@ -137,12 +139,8 @@ const AdminSubscribers = () => {
           className="bg-zinc-900/60 border border-white/[0.08] rounded-2xl overflow-hidden">
           {/* Table header */}
           <div className="grid grid-cols-[auto_1fr_1fr] gap-4 px-5 py-3 border-b border-white/[0.06] bg-zinc-900/40">
-            <input
-              type="checkbox"
-              checked={allSelected}
-              onChange={toggleSelectAll}
-              className="w-4 h-4 rounded accent-violet-500 cursor-pointer"
-            />
+            <input type="checkbox" checked={allSelected} onChange={toggleSelectAll}
+              className="w-4 h-4 rounded accent-violet-500 cursor-pointer" />
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.2em]">Email</p>
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.2em]">Joined</p>
           </div>
@@ -158,13 +156,10 @@ const AdminSubscribers = () => {
                     ? "bg-violet-500/10 border-l-2 border-violet-500"
                     : "hover:bg-white/[0.02]"
                 } ${i !== subscribers.length - 1 ? "border-b border-white/[0.04]" : ""}`}>
-                <input
-                  type="checkbox"
-                  checked={selected.includes(s._id)}
+                <input type="checkbox" checked={selected.includes(s._id)}
                   onChange={() => toggleSelect(s._id)}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-4 h-4 rounded accent-violet-500 cursor-pointer"
-                />
+                  className="w-4 h-4 rounded accent-violet-500 cursor-pointer" />
                 <p className="text-sm text-zinc-300 truncate">{s.email}</p>
                 <p className="text-sm font-mono text-zinc-500">{new Date(s.createdAt).toLocaleString()}</p>
               </motion.div>
