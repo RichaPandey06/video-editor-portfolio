@@ -2,7 +2,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useCallback } from "react";
 import {
   FiGrid,
-  FiFolderOpen,
+  FiFolder,
   FiMail,
   FiUsers,
   FiLogOut,
@@ -18,80 +18,102 @@ const AdminLayout = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Dashboard stats
   const [unreadCount, setUnreadCount] = useState(0);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [projectCount, setProjectCount] = useState(0);
 
-  // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
-  // ✅ FIX #1: Memoize fetch function to prevent recreation
   const fetchDashboardData = useCallback(async () => {
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
 
-    setIsLoading(true);
-    setError(null);
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
 
-    const [contactRes, subscribersRes, projectsRes] = await Promise.all([
-      axios.get(`${API_URL}/contact`, { headers }),
-      axios.get(`${API_URL}/subscribers`, { headers }),
-      axios.get(`${API_URL}/project`, { headers }), // use /project if backend route is singular
-    ]);
+      setIsLoading(true);
+      setError(null);
 
-    const unread = Array.isArray(contactRes.data)
-      ? contactRes.data.filter((m) => !m.read).length
-      : 0;
+      // FIX: Use /projects (plural) to match backend route
+      const [contactRes, subscribersRes, projectsRes] = await Promise.all([
+        axios.get(`${API_URL}/contact`, { headers }),
+        axios.get(`${API_URL}/subscribers`, { headers }),
+        axios.get(`${API_URL}/projects`, { headers }), // was /project (singular) — caused 404
+      ]);
 
-    const subscribers = Array.isArray(subscribersRes.data)
-      ? subscribersRes.data.length
-      : 0;
+      const unread = Array.isArray(contactRes.data)
+        ? contactRes.data.filter((m) => !m.read).length
+        : 0;
 
-    const projects = Array.isArray(projectsRes.data)
-      ? projectsRes.data.length
-      : 0;
+      const subscribers = Array.isArray(subscribersRes.data)
+        ? subscribersRes.data.length
+        : 0;
 
-    setUnreadCount(unread);
-    setSubscriberCount(subscribers);
-    setProjectCount(projects);
-  } catch (err) {
-    console.error("Dashboard data fetch error:", err);
+      const projects = Array.isArray(projectsRes.data)
+        ? projectsRes.data.length
+        : 0;
 
-    if (err.response?.status === 401) {
-      localStorage.removeItem("token");
-      navigate("/admin/login");
-      return;
+      setUnreadCount(unread);
+      setSubscriberCount(subscribers);
+      setProjectCount(projects);
+    } catch (err) {
+      console.error("Dashboard data fetch error:", err);
+
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/admin/login");
+        return;
+      }
+
+      // FIX: Don't overwrite error state on 429 — just skip silently
+      // since it's a background poll, not a user-triggered action
+      if (err.response?.status === 429) {
+        console.warn("Rate limited — skipping this poll cycle.");
+        return;
+      }
+
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to load dashboard data."
+      );
+    } finally {
+      setIsLoading(false);
     }
+  }, [navigate]);
 
-    setError(
-      err.response?.data?.message ||
-      err.message ||
-      "Failed to load dashboard data."
-    );
-  } finally {
-    setIsLoading(false);
-  }
-}, [navigate]);
-
-  // ✅ FIX #4: Remove location.pathname from dependencies - only fetch on mount
   useEffect(() => {
-    // Fetch immediately on mount
     fetchDashboardData();
 
-    // ✅ FIX #5: Set up interval with proper cleanup
-    const interval = setInterval(fetchDashboardData, 60 * 1000);
+    // FIX: Poll every 5 minutes instead of every 1 minute to avoid 429s
+    const interval = setInterval(() => {
+      // FIX: Skip polling when tab is hidden to avoid unnecessary requests
+      if (document.visibilityState === "visible") {
+        fetchDashboardData();
+      }
+    }, 5 * 60 * 1000);
 
-    return () => clearInterval(interval);
+    // FIX: Also re-fetch when user returns to the tab after being away
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchDashboardData();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [fetchDashboardData]);
 
-  // ✅ FIX #6: Close sidebar when navigating
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
@@ -101,7 +123,7 @@ const AdminLayout = () => {
     {
       path: "/admin/project",
       label: "Projects",
-      icon: FiFolderOpen,
+      icon: FiFolder,
       badge: projectCount,
     },
     {
@@ -148,7 +170,6 @@ const AdminLayout = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Loading indicator */}
             {isLoading && (
               <div className="hidden md:flex items-center gap-2 text-xs text-zinc-400">
                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
@@ -213,14 +234,12 @@ const AdminLayout = () => {
                 <Icon className="w-4 h-4 flex-shrink-0" strokeWidth={1.75} />
                 <span className="flex-1">{label}</span>
 
-                {/* Badge */}
                 {badge > 0 && (
                   <span className="min-w-[24px] h-[24px] px-1.5 rounded-full bg-gradient-to-r from-violet-600 to-violet-500 text-white text-[11px] font-bold flex items-center justify-center flex-shrink-0">
                     {badge > 99 ? "99+" : badge}
                   </span>
                 )}
 
-                {/* Active indicator */}
                 {isActive(path) && !badge && (
                   <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
                 )}
@@ -243,7 +262,6 @@ const AdminLayout = () => {
         {/* Main Content */}
         <main className="relative flex-1 min-w-0 px-4 sm:px-6 lg:px-10 py-10">
           <div className="max-w-7xl mx-auto">
-            {/* Show loading state */}
             {isLoading && (
               <div className="flex items-center justify-center py-20">
                 <div className="flex flex-col items-center gap-3">
@@ -253,7 +271,6 @@ const AdminLayout = () => {
               </div>
             )}
 
-            {/* Show content if not loading */}
             {!isLoading && <Outlet />}
           </div>
         </main>
