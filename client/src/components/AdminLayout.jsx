@@ -10,31 +10,42 @@ const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [subscriberCount, setSubscriberCount] = useState(0);
+  const [projectCount, setProjectCount] = useState(0);
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
 
   useEffect(() => {
-    const fetchUnread = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/contact`, { headers });
-        const count = response.data.filter((m) => !m.read).length;
-        setUnreadCount(count);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchUnread = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/contact`, { headers });
+      const count = response.data.filter((m) => !m.read).length;
+      setUnreadCount(count);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    const fetchSubscribers = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/subscribers`, { headers });
-        setSubscriberCount(response.data.length); // assuming API returns array of subscribers
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchSubscribers = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/subscribers`, { headers });
+      setSubscriberCount(response.data.length); 
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/projects`, { headers });
+      setProjectCount(response.data.length); 
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
     fetchUnread();
     fetchSubscribers();
+    fetchProjects();
 
     // refresh every 60 seconds
     const interval = setInterval(() => {
