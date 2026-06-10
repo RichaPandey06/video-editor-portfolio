@@ -18,7 +18,7 @@ const createContact = async (req, res) => {
     res.status(201).json({ success: true, contact });
 
     resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: "noreply@send.richapandey.xyz",
       to: process.env.EMAIL_USER,
       subject: `🎬 New Portfolio Inquiry from ${name}`,
       html: `
@@ -69,7 +69,7 @@ const replyContact = async (req, res) => {
     const { replyText } = req.body;
 
     resend.emails.send({
-      from: "onboarding@resend.dev",
+     from: "noreply@send.richapandey.xyz",
       to: contact.email,
       subject: `Re: Your message to Richa Edits`,
       html: `
