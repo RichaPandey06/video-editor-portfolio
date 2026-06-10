@@ -10,9 +10,9 @@ const {
   replyContact,
 } = require("../controllers/contactController");
 
+router.post("/", createContact);
 
-
-router.get("/", protect, getContacts);           // no limiter — admin only
+router.get("/", protect, getContacts);         // no limiter — admin only
 router.delete("/:id", protect, deleteContact);
 router.patch("/:id/read", protect, markAsRead);
 router.post("/:id/reply", protect, replyContact);
