@@ -57,7 +57,7 @@ const EditProject = () => {
       );
 
       toast.success("✅ Project Updated Successfully");
-      navigate("/admin/project"); // redirect back after update
+      navigate("/admin/projects"); // redirect back after update
     } catch (error) {
       console.error(error);
       toast.error("❌ Update Failed");
