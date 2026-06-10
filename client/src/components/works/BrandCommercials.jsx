@@ -87,7 +87,7 @@ const BrandCommercials = () => {
     const fetchProjects = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/project/category/Commercial`
+          `${API_URL}/project/category/Brand Commercials`
         );
         setProjects(response.data);
       } catch (error) {
