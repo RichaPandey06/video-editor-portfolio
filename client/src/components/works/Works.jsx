@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useCallback } from "react";
+import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
 import iframVideo from "../../assets/videos/ifram.mp4";
 
-// ─── Animation variants defined OUTSIDE component to prevent re-creation on render ───
+
+
+
+
+// ─── Animation variants ───
 const FADE_UP = {
   hidden: { opacity: 0, y: 32 },
   visible: (delay = 0) => ({
@@ -31,7 +35,6 @@ const CARD_ITEM = {
   },
 };
 
-// ─── Static data outside component — no rebuild on re-render ───
 const CATEGORIES = [
   {
     id: 1,
@@ -40,6 +43,7 @@ const CATEGORIES = [
     tag: "01",
     link: "/youtube-projects",
     description: "Cinematic long-form content built for retention and brand depth.",
+    image: "youtube.png",
   },
   {
     id: 2,
@@ -48,6 +52,7 @@ const CATEGORIES = [
     tag: "02",
     link: "/instagram-projects",
     description: "Hook-first vertical edits engineered for the algorithm.",
+    image: "instagram.jpeg",
   },
   {
     id: 3,
@@ -56,6 +61,7 @@ const CATEGORIES = [
     tag: "03",
     link: "/brand-commercials",
     description: "Story-driven brand films that convert viewers into customers.",
+    image: "commercial.png",
   },
   {
     id: 4,
@@ -64,24 +70,11 @@ const CATEGORIES = [
     tag: "04",
     link: "/motion-graphics",
     description: "Frame-precise animations with intentional kinetic language.",
+    image: "motion.jpeg",
   },
 ];
-
-// ─── Isolated video card — prevents parent re-render cascade ───
+// ─── Card with PNG thumbnail ───
 const WorkCard = ({ project }) => {
-  const videoRef = useRef(null);
-
-  const handleMouseEnter = useCallback(() => {
-    videoRef.current?.play().catch(() => {});
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.pause();
-    v.currentTime = 0;
-  }, []);
-
   return (
     <motion.div
       variants={CARD_ITEM}
@@ -96,23 +89,15 @@ const WorkCard = ({ project }) => {
       >
         <div className="relative flex flex-col h-full bg-zinc-900/60 border border-white/[0.08] hover:border-white/20 rounded-2xl overflow-hidden backdrop-blur-sm transition-colors duration-300 cursor-pointer">
 
-          {/* ── Video Thumbnail ── */}
-          <div
-            className="relative overflow-hidden bg-zinc-950 h-44 sm:h-52 flex-shrink-0"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <video
-              ref={videoRef}
-              src={iframVideo}
-              muted
-              loop
-              playsInline
-              preload="none"
+          {/* ── PNG Thumbnail ── */}
+          <div className="relative overflow-hidden bg-zinc-950 h-44 sm:h-52 flex-shrink-0">
+            <img
+              src={project.image}
+              alt={project.title}
               className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
             />
 
-            {/* Subtle dark scrim — always present, deepens on hover */}
+            {/* Gradient scrim */}
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 via-zinc-950/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-400" />
 
             {/* Numbered tag — top-left */}
@@ -152,7 +137,7 @@ const WorkCard = ({ project }) => {
   );
 };
 
-// ─── Showreel with parallax scroll ───
+// ─── Showreel (unchanged) ───
 const Showreel = () => {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -170,18 +155,15 @@ const Showreel = () => {
       transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       className="mb-16 md:mb-20"
     >
-      {/* Label above */}
       <p className="text-center text-[10px] font-mono tracking-[0.3em] text-zinc-500 uppercase mb-4 select-none">
         Showreel — 2026
       </p>
 
       <div className="relative max-w-2xl mx-auto">
-        {/* Ambient glow — purely decorative, no hover jank */}
         <div
           aria-hidden="true"
           className="absolute -inset-px rounded-2xl bg-gradient-to-br from-white/5 to-transparent pointer-events-none"
         />
-
         <div className="relative rounded-2xl overflow-hidden border border-white/[0.08]">
           <motion.div style={{ scale }}>
             <video
@@ -194,8 +176,6 @@ const Showreel = () => {
               className="w-full max-h-[220px] sm:max-h-[320px] md:max-h-[380px] object-cover block"
             />
           </motion.div>
-
-          {/* Bottom caption bar */}
           <div className="absolute bottom-0 left-0 right-0 px-5 py-3 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent">
             <span className="text-[11px] text-white/50 font-mono tracking-widest uppercase select-none">
               ● Live
@@ -218,7 +198,6 @@ const Work = () => {
       aria-labelledby="work-heading"
       className="relative bg-zinc-950 text-white py-24 md:py-36 overflow-hidden"
     >
-      {/* Subtle grid texture */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.03]"
@@ -230,11 +209,8 @@ const Work = () => {
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-
-        {/* ── Showreel ── */}
         <Showreel />
 
-        {/* ── Header ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -269,7 +245,6 @@ const Work = () => {
           </motion.p>
         </motion.div>
 
-        {/* ── Cards Grid ── */}
         <motion.div
           variants={STAGGER_CONTAINER}
           initial="hidden"
@@ -282,7 +257,6 @@ const Work = () => {
           ))}
         </motion.div>
 
-        {/* ── Footer note ── */}
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -292,7 +266,6 @@ const Work = () => {
         >
           All work is client-approved and NDA-compliant where applicable.
         </motion.p>
-
       </div>
     </section>
   );
